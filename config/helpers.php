@@ -17,9 +17,9 @@ function loadView(string $view, array $datas = [], string $layout = "base") {
 }
 
 function redirectTo(string $controller, string $action, array $params = []): void {
-    $url = WEBROOT . "$controller/$action";
+    $url = WEBROOT . "?controller=$controller&action=$action";
     if ($params) {
-        $url .= '?' . http_build_query($params);
+        $url .= '&' . http_build_query($params);
     }
     header('Location:' . $url);
     exit();

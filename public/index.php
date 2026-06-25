@@ -20,7 +20,7 @@
 define("WEBROOT","http://localhost:8003/");
 define("ROOT", str_replace("public","",$_SERVER['DOCUMENT_ROOT']));
 if(session_status() == PHP_SESSION_NONE){session_start();}
-// require_once ROOT."env.php";
+require_once ROOT."env.dev.php";
 require_once ROOT."/config/helpers.php";
 require_once ROOT."/config/validators.php";
 require_once ROOT."/routes/web/router.php";

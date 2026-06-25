@@ -57,9 +57,8 @@ VALUES
         (SELECT id FROM etats WHERE libelle = 'En cours')
     ),
     (
-        'Projet final', 
-        '2025-03-10', 
-        'Développer l\'application selon MVC', 
+        'Projet final',
+        '2025-03-10',
+        'Développer l''application selon MVC',
         (SELECT id FROM etats WHERE libelle = 'Terminé')
-    )
-
+    );

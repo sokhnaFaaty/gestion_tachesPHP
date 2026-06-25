@@ -28,9 +28,10 @@ function executeSelect(string $sql, array $data = [], $one = false) {
     return $result;
 }
 
-function executeUpdate(string $sql, array $data) {
-    $conn = openConnexion();
+function executeUpdate(string $sql, array $data): bool {
+    $conn      = openConnexion();
     $statement = $conn->prepare($sql);
-    $statement->execute($data);
+    $result    = $statement->execute($data);
     closeConnexion($conn);
+    return $result;
 }

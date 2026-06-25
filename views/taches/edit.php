@@ -13,13 +13,13 @@
     <div class="dashboard-content">
         <div class="header-section">
             <h1><i class="fas fa-edit"></i> Modifier la tâche</h1>
-            <a href="<?= WEBROOT ?>tache/dashboard" class="btn btn-primary">
+            <a href="<?= WEBROOT ?>?controller=tache&action=dashboard" class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
         </div>
         
         <div class="form-container" style="max-width: 600px; margin: 0 auto;">
-            <form method="POST" action="<?= WEBROOT ?>tache/edit?id=<?= $tache['id'] ?>">
+            <form method="POST" action="<?= WEBROOT ?>?controller=tache&action=edit&id=<?= $tache['id'] ?>">
                 <div class="form-group">
                     <label for="libele">
                         <i class="fas fa-tag"></i> Libellé <span style="color: red;">*</span>

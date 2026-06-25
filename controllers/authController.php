@@ -1,6 +1,4 @@
 <?php
-
-
 require_once ROOT . '/models/authModel.php';
 
 function authLogin() {

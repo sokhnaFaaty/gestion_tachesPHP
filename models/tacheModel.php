@@ -1,6 +1,6 @@
 <?php
 
-require_once ROOT . '/app/models/etatModel.php';
+require_once ROOT . 'models/etatModel.php';
 
 // Récupérer toutes les tâches
 function tacheFindAll(): array {
@@ -34,16 +34,19 @@ function tacheFindByEtat(int $etatId): array {
 // Ajouter une tâche
 function tacheCreate(array $data): int|false {
     $etatId = $data['etat_id'] ?? etatGetDefaultId();
-    
-    $sql = "INSERT INTO taches (libele, date, description, etat_id) 
-            VALUES (:libele, :date, :description, :etat_id)";
-    
-    return executeUpdate($sql, [
-        'libele' => $data['libele'],
-        'date' => $data['date'],
+
+    $sql    = "INSERT INTO taches (libele, date, description, etat_id)
+               VALUES (:libele, :date, :description, :etat_id)
+               RETURNING id";
+
+    $result = executeSelect($sql, [
+        'libele'      => $data['libele'],
+        'date'        => $data['date'],
         'description' => $data['description'] ?? '',
-        'etat_id' => $etatId
-    ]);
+        'etat_id'     => $etatId
+    ], true);
+
+    return $result ? (int)$result['id'] : false;
 }
 
 // Modifier une tâche
@@ -69,18 +72,19 @@ function tacheUpdate(int $id, array $data): bool {
 }
 
 // Supprimer une tâche
-function tacheDelete(int $id): bool {
+function deleteTacheById(int $id): bool {
     $sql = "DELETE FROM taches WHERE id = :id";
     $result = executeUpdate($sql, ['id' => $id]);
     return $result !== false;
 }
 
 
+
 // CHANGEMENT D'ÉTAT
 
 
 // Marquer comme "Terminé"
-function tacheMarquerTerminer(int $id): bool {
+function tacheSetTermine(int $id): bool {
     $etat = etatFindByLibelle('Terminé');
     if (!$etat) return false;
     
@@ -93,7 +97,7 @@ function tacheMarquerTerminer(int $id): bool {
 }
 
 // Marquer comme "En cours"
-function tacheMarquerEnCours(int $id): bool {
+function tacheSetEnCours(int $id): bool {
     $etat = etatFindByLibelle('En cours');
     if (!$etat) return false;
     
@@ -106,7 +110,7 @@ function tacheMarquerEnCours(int $id): bool {
 }
 
 // Remettre à "A faire"
-function tacheMarquerAFaire(int $id): bool {
+function tacheSetAFaire(int $id): bool {
     $etat = etatFindByLibelle('A faire');
     if (!$etat) return false;
     

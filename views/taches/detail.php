@@ -9,15 +9,15 @@
             <span><?= htmlspecialchars($_SESSION['user']['nom'] ?? '') ?></span>
         </div>
     </nav>
-    
+
     <div class="dashboard-content">
         <div class="header-section">
             <h1><i class="fas fa-info-circle"></i> Détail</h1>
-            <a href="<?= WEBROOT ?>tache/dashboard" class="btn btn-primary">
+            <a href="<?= WEBROOT ?>?controller=tache&action=dashboard" class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
         </div>
-        
+
         <div class="detail-card" style="max-width: 700px; margin: 0 auto; background: #f7fafc; border-radius: 12px; padding: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: start;">
                 <h2 style="color: #1a1a2e;"><?= htmlspecialchars($tache['libele']) ?></h2>
@@ -25,16 +25,16 @@
                     <?php if (($tache['etat_libelle'] ?? '') == 'A faire'): ?>
                         <i class="fas fa-clock"></i>
                     <?php elseif (($tache['etat_libelle'] ?? '') == 'En cours'): ?>
-                        <i class="fas fa-spinner fa-spin"></i>
+                        <i class="fas fa-sync-alt"></i>
                     <?php elseif (($tache['etat_libelle'] ?? '') == 'Terminé'): ?>
                         <i class="fas fa-check-circle"></i>
                     <?php endif; ?>
                     <?= htmlspecialchars($tache['etat_libelle'] ?? 'A faire') ?>
                 </span>
             </div>
-            
+
             <hr style="margin: 20px 0; border-color: #e2e8f0;">
-            
+
             <div style="display: grid; gap: 15px;">
                 <div>
                     <strong><i class="fas fa-calendar-alt"></i> Date :</strong>
@@ -55,20 +55,20 @@
                     </div>
                 <?php endif; ?>
             </div>
-            
+
             <div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="<?= WEBROOT ?>tache/edit?id=<?= $tache['id'] ?>" class="btn btn-edit">
+                <a href="<?= WEBROOT ?>?controller=tache&action=edit&id=<?= $tache['id'] ?>" class="btn btn-edit">
                     <i class="fas fa-edit"></i> Modifier
                 </a>
                 <?php if (($tache['etat_libelle'] ?? '') != 'Terminé'): ?>
-                    <a href="<?= WEBROOT ?>tache/marquerTerminer?id=<?= $tache['id'] ?>" 
-                       class="btn btn-complete" 
+                    <a href="<?= WEBROOT ?>?controller=tache&action=marquerTerminer&id=<?= $tache['id'] ?>"
+                       class="btn btn-complete"
                        onclick="return confirm('Terminer cette tâche ?')">
                         <i class="fas fa-check-double"></i> Terminer
                     </a>
                 <?php endif; ?>
-                <a href="<?= WEBROOT ?>tache/delete?id=<?= $tache['id'] ?>" 
-                   class="btn btn-delete" 
+                <a href="<?= WEBROOT ?>?controller=tache&action=delete&id=<?= $tache['id'] ?>"
+                   class="btn btn-delete"
                    onclick="return confirm('Supprimer cette tâche ?')">
                     <i class="fas fa-trash-alt"></i> Supprimer
                 </a>

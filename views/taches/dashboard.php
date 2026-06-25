@@ -4,39 +4,38 @@
             <i class="fas fa-tasks"></i>
             <span>Gestion de tâches</span>
         </div>
-        <div class="nav-user">
+        <!-- <div class="nav-user">
             <i class="fas fa-user-circle"></i>
             <span><?= htmlspecialchars($user['nom'] ?? 'Utilisateur') ?></span>
             <button class="btn btn-logout" style="margin-left: 15px;">
-                <a href="<?= WEBROOT ?>auth/logout">
+                <a href="<?= WEBROOT ?>?controller=auth&action=logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </button>
-        </div>
+        </div> -->
     </nav>
-    
+
     <div class="dashboard-content">
         <div class="header-section">
             <h1><i class="fas fa-list"></i> Mes tâches</h1>
-            <a href="<?= WEBROOT ?>tache/add" class="btn btn-add">
+            <a href="<?= WEBROOT ?>?controller=tache&action=add" class="btn btn-add">
                 <i class="fas fa-plus-circle"></i> Ajouter
             </a>
         </div>
-        
-        <!-- Filtres -->
+
         <div class="filter-section">
             <span class="filter-label"><i class="fas fa-filter"></i> Filtrer :</span>
-            <a href="<?= WEBROOT ?>tache/dashboard" 
+            <a href="<?= WEBROOT ?>?controller=tache&action=dashboard"
                class="filter-btn <?= !isset($filtreEtat) || $filtreEtat == 0 ? 'active' : '' ?>">
                 Toutes
             </a>
             <?php foreach ($etats as $etat): ?>
-                <a href="<?= WEBROOT ?>tache/filtrerParEtat?etat_id=<?= $etat['id'] ?>" 
+                <a href="<?= WEBROOT ?>?controller=tache&action=filtrerParEtat&etat_id=<?= $etat['id'] ?>"
                    class="filter-btn <?= isset($filtreEtat) && $filtreEtat == $etat['id'] ? 'active' : '' ?>">
                     <?php if ($etat['libelle'] == 'A faire'): ?>
                         <i class="fas fa-clock"></i>
                     <?php elseif ($etat['libelle'] == 'En cours'): ?>
-                        <i class="fas fa-spinner fa-spin"></i>
+                        <i class="fas fa-sync-alt"></i>
                     <?php elseif ($etat['libelle'] == 'Terminé'): ?>
                         <i class="fas fa-check-circle"></i>
                     <?php endif; ?>
@@ -44,8 +43,7 @@
                 </a>
             <?php endforeach; ?>
         </div>
-        
-        <!-- Tableau -->
+
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -74,7 +72,7 @@
                                         <?php if (($tache['etat_libelle'] ?? '') == 'A faire'): ?>
                                             <i class="fas fa-clock"></i>
                                         <?php elseif (($tache['etat_libelle'] ?? '') == 'En cours'): ?>
-                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <i class="fas fa-sync-alt"></i>
                                         <?php elseif (($tache['etat_libelle'] ?? '') == 'Terminé'): ?>
                                             <i class="fas fa-check-circle"></i>
                                         <?php endif; ?>
@@ -83,26 +81,21 @@
                                 </td>
                                 <td>
                                     <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
-                                        <a href="<?= WEBROOT ?>tache/detail?id=<?= $tache['id'] ?>" class="btn btn-detail">
+                                        <a href="<?= WEBROOT ?>?controller=tache&action=detail&id=<?= $tache['id'] ?>" class="btn btn-detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <?php if (($tache['etat_libelle'] ?? '') != 'Terminé'): ?>
-                                            <a href="<?= WEBROOT ?>tache/marquerTerminer?id=<?= $tache['id'] ?>" 
-                                               class="btn btn-complete" 
+                                            <a href="<?= WEBROOT ?>?controller=tache&action=marquerTerminer&id=<?= $tache['id'] ?>"
+                                               class="btn btn-complete"
                                                onclick="return confirm('Terminer cette tâche ?')">
                                                 <i class="fas fa-check-double"></i>
                                             </a>
                                         <?php endif; ?>
-                                        <?php if (($tache['etat_libelle'] ?? '') == 'A faire'): ?>
-                                            <a href="<?= WEBROOT ?>tache/marquerEnCours?id=<?= $tache['id'] ?>" class="btn btn-start">
-                                                <i class="fas fa-play"></i>
-                                            </a>
-                                        <?php endif; ?>
-                                        <a href="<?= WEBROOT ?>tache/edit?id=<?= $tache['id'] ?>" class="btn btn-edit">
+                                        <a href="<?= WEBROOT ?>?controller=tache&action=edit&id=<?= $tache['id'] ?>" class="btn btn-edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="<?= WEBROOT ?>tache/delete?id=<?= $tache['id'] ?>" 
-                                           class="btn btn-delete" 
+                                        <a href="<?= WEBROOT ?>?controller=tache&action=delete&id=<?= $tache['id'] ?>"
+                                           class="btn btn-delete"
                                            onclick="return confirm('Supprimer cette tâche ?')">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>

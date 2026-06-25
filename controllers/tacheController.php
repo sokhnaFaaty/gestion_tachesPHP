@@ -3,10 +3,8 @@
 require_once ROOT . 'models/tacheModel.php';
 require_once ROOT . 'models/etatModel.php';
 
-// DASHBOARD - Liste des tâches
+
 function tacheDashboard() {
-    auth();
-    
     $taches = tacheFindAll();
     $etats = etatFindAll();
     $user = $_SESSION['user'] ?? null;
@@ -20,13 +18,11 @@ function tacheDashboard() {
 
 // AJOUTER UNE TÂCHE
 function tacheAdd() {
-    auth();
-    
     $errors = [];
     $tache = ['libele' => '', 'date' => '', 'description' => '', 'etat_id' => ''];
     $etats = etatFindAll();
     
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajouTache'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tache['libele'] = trim($_POST['libele'] ?? '');
         $tache['date'] = trim($_POST['date'] ?? '');
         $tache['description'] = trim($_POST['description'] ?? '');
@@ -61,10 +57,7 @@ function tacheAdd() {
     ]);
 }
 
-// MODIFIER UNE TÂCHE
 function tacheEdit() {
-    auth();
-    
     $id = (int)($_GET['id'] ?? 0);
     $tache = tacheFindById($id);
     
@@ -76,7 +69,7 @@ function tacheEdit() {
     $etats = etatFindAll();
     $errors = [];
     
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifTache'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $updateData = [
             'libele' => trim($_POST['libele'] ?? ''),
             'date' => trim($_POST['date'] ?? ''),
@@ -108,8 +101,6 @@ function tacheEdit() {
 
 // DÉTAIL D'UNE TÂCHE
 function tacheDetail() {
-    auth();
-    
     $id = (int)($_GET['id'] ?? 0);
     $tache = tacheFindById($id);
     
@@ -123,29 +114,23 @@ function tacheDetail() {
     ]);
 }
 
-// SUPPRIMER UNE TÂCHE
 function tacheDelete() {
-    auth();
-    
     $id = (int)($_GET['id'] ?? 0);
-    
+
     if ($id > 0) {
-        tacheDelete($id);
+        deleteTacheById($id);
     }
     
     redirectTo('tache', 'dashboard');
 }
 
-// CHANGER L'ÉTAT D'UNE TÂCHE
 
 // Marquer comme "Terminé"
 function tacheMarquerTerminer() {
-    auth();
-    
     $id = (int)($_GET['id'] ?? 0);
     
     if ($id > 0) {
-        tacheMarquerTerminer($id);
+        tacheSetTermine($id);
     }
     
     redirectTo('tache', 'dashboard');
@@ -153,12 +138,10 @@ function tacheMarquerTerminer() {
 
 // Marquer comme "En cours"
 function tacheMarquerEnCours() {
-    auth();
-    
     $id = (int)($_GET['id'] ?? 0);
     
     if ($id > 0) {
-        tacheMarquerEnCours($id);
+        tacheSetEnCours($id);
     }
     
     redirectTo('tache', 'dashboard');
@@ -166,8 +149,6 @@ function tacheMarquerEnCours() {
 
 // FILTRER PAR ÉTAT
 function tacheFiltrerParEtat() {
-    auth();
-    
     $etatId = (int)($_GET['etat_id'] ?? 0);
     $etats = etatFindAll();
     $user = $_SESSION['user'] ?? null;
