@@ -1,123 +1,119 @@
 <?php
 
-require_once ROOT . 'models/etatModel.php';
+require_once ROOT . '/db/Database.php';
+require_once ROOT . '/models/EtatModel.php';
 
-// Récupérer toutes les tâches
-function tacheFindAll(): array {
-    $sql = "SELECT t.*, e.libelle as etat_libelle
-            FROM taches t 
-            LEFT JOIN etats e ON t.etat_id = e.id
-            ORDER BY t.date ASC";
-    return executeSelect($sql) ?: [];
-}
+class TacheModel {
 
-// Récupérer une tâche par son ID
-function tacheFindById(int $id): ?array {
-    $sql = "SELECT t.*, e.libelle as etat_libelle
-            FROM taches t 
-            LEFT JOIN etats e ON t.etat_id = e.id 
-            WHERE t.id = :id";
-    return executeSelect($sql, ['id' => $id], true) ?: null;
-}
+    private Database $db;
+    private EtatModel $etatModel;
 
-// Récupérer les tâches par état
-function tacheFindByEtat(int $etatId): array {
-    $sql = "SELECT t.*, e.libelle as etat_libelle
-            FROM taches t 
-            LEFT JOIN etats e ON t.etat_id = e.id 
-            WHERE t.etat_id = :etat_id
-            ORDER BY t.date ASC";
-    return executeSelect($sql, ['etat_id' => $etatId]) ?: [];
-}
+    public function __construct() {
+        $this->db = new Database();
+        $this->etatModel = new EtatModel();
+    }
 
+    // Récupérer toutes les tâches
+    public function findAll(): array {
+        $sql = "SELECT t.*, e.libelle as etat_libelle
+                FROM taches t
+                LEFT JOIN etats e ON t.etat_id = e.id
+                ORDER BY t.date ASC";
+        return $this->db->select($sql) ?: [];
+    }
 
-// Ajouter une tâche
-function tacheCreate(array $data): int|false {
-    $etatId = $data['etat_id'] ?? etatGetDefaultId();
+    // Récupérer une tâche par son ID
+    public function findById(int $id): ?array {
+        $sql = "SELECT t.*, e.libelle as etat_libelle
+                FROM taches t
+                LEFT JOIN etats e ON t.etat_id = e.id
+                WHERE t.id = :id";
+        return $this->db->select($sql, ['id' => $id], true) ?: null;
+    }
 
-    $sql    = "INSERT INTO taches (libele, date, description, etat_id)
-               VALUES (:libele, :date, :description, :etat_id)
-               RETURNING id";
+    // Récupérer les tâches par état
+    public function findByEtat(int $etatId): array {
+        $sql = "SELECT t.*, e.libelle as etat_libelle
+                FROM taches t
+                LEFT JOIN etats e ON t.etat_id = e.id
+                WHERE t.etat_id = :etat_id
+                ORDER BY t.date ASC";
+        return $this->db->select($sql, ['etat_id' => $etatId]) ?: [];
+    }
 
-    $result = executeSelect($sql, [
-        'libele'      => $data['libele'],
-        'date'        => $data['date'],
-        'description' => $data['description'] ?? '',
-        'etat_id'     => $etatId
-    ], true);
+    // Ajouter une tâche
+    public function create(array $data): int|false {
+        $etatId = $data['etat_id'] ?? $this->etatModel->getDefaultId();
 
-    return $result ? (int)$result['id'] : false;
-}
+        $sql = "INSERT INTO taches (libele, date, description, etat_id)
+                VALUES (:libele, :date, :description, :etat_id)
+                RETURNING id";
 
-// Modifier une tâche
-function tacheUpdate(int $id, array $data): bool {
-    $sql = "UPDATE taches SET 
-            libele = :libele, 
-            date = :date, 
-            description = :description, 
-            etat_id = :etat_id,
-            updated_at = CURRENT_TIMESTAMP 
-            WHERE id = :id";
-    
-    $params = [
-        'id' => $id,
-        'libele' => $data['libele'],
-        'date' => $data['date'],
-        'description' => $data['description'] ?? '',
-        'etat_id' => $data['etat_id'] ?? etatGetDefaultId()
-    ];
-    
-    $result = executeUpdate($sql, $params);
-    return $result !== false;
-}
+        $result = $this->db->select($sql, [
+            'libele'      => $data['libele'],
+            'date'        => $data['date'],
+            'description' => $data['description'] ?? '',
+            'etat_id'     => $etatId
+        ], true);
 
-// Supprimer une tâche
-function deleteTacheById(int $id): bool {
-    $sql = "DELETE FROM taches WHERE id = :id";
-    $result = executeUpdate($sql, ['id' => $id]);
-    return $result !== false;
-}
+        return $result ? (int)$result['id'] : false;
+    }
 
+    // Modifier une tâche
+    public function update(int $id, array $data): bool {
+        $sql = "UPDATE taches SET
+                libele = :libele,
+                date = :date,
+                description = :description,
+                etat_id = :etat_id,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = :id";
 
+        $params = [
+            'id' => $id,
+            'libele' => $data['libele'],
+            'date' => $data['date'],
+            'description' => $data['description'] ?? '',
+            'etat_id' => $data['etat_id'] ?? $this->etatModel->getDefaultId()
+        ];
 
-// CHANGEMENT D'ÉTAT
+        $result = $this->db->update($sql, $params);
+        return $result !== false;
+    }
 
+    // Supprimer une tâche
+    public function delete(int $id): bool {
+        $sql = "DELETE FROM taches WHERE id = :id";
+        $result = $this->db->update($sql, ['id' => $id]);
+        return $result !== false;
+    }
 
-// Marquer comme "Terminé"
-function tacheSetTermine(int $id): bool {
-    $etat = etatFindByLibelle('Terminé');
-    if (!$etat) return false;
-    
-    $sql = "UPDATE taches SET etat_id = :etat_id, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
-    $result = executeUpdate($sql, [
-        'id' => $id,
-        'etat_id' => $etat['id']
-    ]);
-    return $result !== false;
-}
+    // ===== CHANGEMENT D'ÉTAT =====
 
-// Marquer comme "En cours"
-function tacheSetEnCours(int $id): bool {
-    $etat = etatFindByLibelle('En cours');
-    if (!$etat) return false;
-    
-    $sql = "UPDATE taches SET etat_id = :etat_id, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
-    $result = executeUpdate($sql, [
-        'id' => $id,
-        'etat_id' => $etat['id']
-    ]);
-    return $result !== false;
-}
+    private function changerEtat(int $id, string $libelleEtat): bool {
+        $etat = $this->etatModel->findByLibelle($libelleEtat);
+        if (!$etat) return false;
 
-// Remettre à "A faire"
-function tacheSetAFaire(int $id): bool {
-    $etat = etatFindByLibelle('A faire');
-    if (!$etat) return false;
-    
-    $sql = "UPDATE taches SET etat_id = :etat_id, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
-    $result = executeUpdate($sql, [
-        'id' => $id,
-        'etat_id' => $etat['id']
-    ]);
-    return $result !== false;
+        $sql = "UPDATE taches SET etat_id = :etat_id, updated_at = CURRENT_TIMESTAMP WHERE id = :id";
+        $result = $this->db->update($sql, [
+            'id' => $id,
+            'etat_id' => $etat['id']
+        ]);
+        return $result !== false;
+    }
+
+    // Marquer comme "Terminé"
+    public function setTermine(int $id): bool {
+        return $this->changerEtat($id, 'Terminé');
+    }
+
+    // Marquer comme "En cours"
+    public function setEnCours(int $id): bool {
+        return $this->changerEtat($id, 'En cours');
+    }
+
+    // Remettre à "A faire"
+    public function setAFaire(int $id): bool {
+        return $this->changerEtat($id, 'A faire');
+    }
 }

@@ -1,24 +1,32 @@
 <?php
 
+require_once ROOT . '/db/Database.php';
 
-require_once ROOT . '/db/database.php';
+class EtatModel {
 
-function etatFindAll(): array {
-    $sql = "SELECT * FROM etats ORDER BY id";
-    return executeSelect($sql) ?: [];
-}
+    private Database $db;
 
-function etatFindById(int $id): ?array {
-    $sql = "SELECT * FROM etats WHERE id = :id";
-    return executeSelect($sql, ['id' => $id], true) ?: null;
-}
+    public function __construct() {
+        $this->db = new Database();
+    }
 
-function etatFindByLibelle(string $libelle): ?array {
-    $sql = "SELECT * FROM etats WHERE libelle = :libelle";
-    return executeSelect($sql, ['libelle' => $libelle], true) ?: null;
-}
+    public function findAll(): array {
+        $sql = "SELECT * FROM etats ORDER BY id";
+        return $this->db->select($sql) ?: [];
+    }
 
-function etatGetDefaultId(): int {
-    $etat = etatFindByLibelle('A faire');
-    return $etat ? (int)$etat['id'] : 1;
+    public function findById(int $id): ?array {
+        $sql = "SELECT * FROM etats WHERE id = :id";
+        return $this->db->select($sql, ['id' => $id], true) ?: null;
+    }
+
+    public function findByLibelle(string $libelle): ?array {
+        $sql = "SELECT * FROM etats WHERE libelle = :libelle";
+        return $this->db->select($sql, ['libelle' => $libelle], true) ?: null;
+    }
+
+    public function getDefaultId(): int {
+        $etat = $this->findByLibelle('A faire');
+        return $etat ? (int)$etat['id'] : 1;
+    }
 }

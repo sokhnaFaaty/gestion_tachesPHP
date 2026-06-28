@@ -4,15 +4,6 @@
             <i class="fas fa-tasks"></i>
             <span>Gestion de tâches</span>
         </div>
-        <!-- <div class="nav-user">
-            <i class="fas fa-user-circle"></i>
-            <span><?= htmlspecialchars($user['nom'] ?? 'Utilisateur') ?></span>
-            <button class="btn btn-logout" style="margin-left: 15px;">
-                <a href="<?= WEBROOT ?>?controller=auth&action=logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                </a>
-            </button>
-        </div> -->
     </nav>
 
     <div class="dashboard-content">

@@ -1,7 +1,7 @@
 <?php
+
 $controllers = [
-    "tache" => "tacheController",
-    "auth" => "authController"
+    "tache" => "TacheController"
 ];
 
 $controller = $_REQUEST["controller"] ?? "tache";
@@ -11,7 +11,8 @@ if (!array_key_exists($controller, $controllers)) {
     die("Contrôleur introuvable");
 }
 
-$controllerFile = ROOT . "/controllers/" . $controllers[$controller] . ".php";
+$className = $controllers[$controller];
+$controllerFile = ROOT . "/controllers/" . $className . ".php";
 
 if (!file_exists($controllerFile)) {
     die("Fichier contrôleur introuvable : " . $controllerFile);
@@ -19,10 +20,14 @@ if (!file_exists($controllerFile)) {
 
 require_once $controllerFile;
 
-$functionName = $controller . ucfirst($action);
-
-if (!function_exists($functionName)) {
-    die("Action introuvable : " . $functionName);
+if (!class_exists($className)) {
+    die("Classe introuvable : " . $className);
 }
 
-$functionName();
+$controllerInstance = new $className();
+
+if (!method_exists($controllerInstance, $action)) {
+    die("Action introuvable : " . $action);
+}
+
+$controllerInstance->$action();

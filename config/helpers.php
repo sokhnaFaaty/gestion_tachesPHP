@@ -25,12 +25,12 @@ function redirectTo(string $controller, string $action, array $params = []): voi
     exit();
 }
 
-function isConnected(): bool {
-    return isset($_SESSION["user"]);
-}
+// function isConnected(): bool {
+//     return isset($_SESSION["user"]);
+// }
 
-function auth(): void {
-    if (!isConnected()) {
-        redirectTo("auth", "login");
-    }
-}
+// function auth(): void {
+//     if (!isConnected()) {
+//         redirectTo("auth", "login");
+//     }
+// }
